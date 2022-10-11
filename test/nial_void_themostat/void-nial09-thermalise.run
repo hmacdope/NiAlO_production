@@ -1,0 +1,98 @@
+################################################################################
+# LAMMPS input file                                                            #
+#                                                                              #
+# Attempted recreation of approximate setup of Zhao, et al.                    #
+# Using nial09 eam, impactor at uP = 3 km/s                                    #
+#                                                                              #
+# richard terrett, 2018                                                        #
+#                                                                              #
+################################################################################
+
+# variables
+
+variable al_fcc_a equal 4.064
+variable ni_fcc_a equal 3.528
+variable v_up     equal 30
+variable    box_x equal 514.00
+variable   box_yz equal 100 
+variable  half_yz equal ${box_yz}/2
+variable void_radius equal 20
+
+# simulation construction
+
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+timestep   0.001
+
+# lattice construction
+
+region       simulation_box block 0.00   ${box_x} 0.00 ${box_yz} 0.00 ${box_yz}
+create_box 2 simulation_box
+region       al_a    block          0.00  14.00 0.00 ${box_yz} 0.00 ${box_yz}  
+region       ni_a    block         14.00  70.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       al_b    block         70.00  98.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       ni_b    block         98.00 154.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       al_c    block        154.00 182.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       ni_c    block        182.00 238.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       al_d    block        238.00 252.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       void    block        252.00 262.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       al_w    block        262.00 276.00 0.00 ${box_yz} 0.00 ${box_yz}  
+region       ni_w    block        276.00 332.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       al_x    block        332.00 360.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       ni_x    block        360.00 416.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       al_y    block        416.00 444.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       ni_y    block        444.00 500.00 0.00 ${box_yz} 0.00 ${box_yz}
+region       al_z    block        500.00 514.00 0.00 ${box_yz} 0.00 ${box_yz}
+region    chomp_b   sphere          84.0       ${half_yz}      ${half_yz}  ${void_radius}
+region    chomp_c   sphere         168.0       ${half_yz}      ${half_yz}  ${void_radius}
+region    chomp_x   sphere         346.0       ${half_yz}      ${half_yz}  ${void_radius}
+region    chomp_y   sphere         430.0       ${half_yz}      ${half_yz}  ${void_radius}
+region       left    block           0.0 257.00 0.0 200 0.0 200
+region      right    block         257.0 514.00 0.0 200 0.0 200
+
+lattice      fcc ${ni_fcc_a} orient x 1 1 1 orient y 1 -1 0 orient z 1 1 -2
+create_atoms 1 region ni_a 
+create_atoms 1 region ni_b
+create_atoms 1 region ni_c
+create_atoms 1 region ni_w
+create_atoms 1 region ni_x
+create_atoms 1 region ni_y
+lattice      fcc ${al_fcc_a} orient x 1 1 1 orient y 1 -1 0 orient z 1 1 -2
+create_atoms 2 region al_a
+create_atoms 2 region al_b
+create_atoms 2 region al_c
+create_atoms 2 region al_d
+create_atoms 2 region al_w
+create_atoms 2 region al_x
+create_atoms 2 region al_y
+create_atoms 2 region al_z
+
+# pair potential
+
+pair_style eam/alloy 
+pair_coeff * * Mishin-Ni-Al-2009.eam.alloy Ni Al
+
+# reporting
+
+thermo 100
+
+dump 1 all atom 1000  thermalise.lammpstrj
+
+# dynamics initialisation
+
+delete_atoms region chomp_b compress no
+delete_atoms region chomp_c compress no
+delete_atoms region chomp_x compress no
+delete_atoms region chomp_y compress no
+delete_atoms overlap 2 all all
+velocity all create 300 1 mom yes rot no
+
+# simulation
+
+
+# Thermalisation
+fix   1 all npt temp 300 300 $(100*dt) iso 0.0 0.0 $(1000*dt) drag 0.0
+run   30000
+write_data void-nial09-thermalised.data

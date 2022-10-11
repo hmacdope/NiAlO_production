@@ -1,0 +1,197 @@
+LAMMPS (24 Mar 2022)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+package gpu 0
+# Impact of NiAl nanolaminate, 4 km/s.
+
+# simulation construction
+
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+
+region       left    block         -1000.0    -45.0 0.0 200 0.0 200
+region      right    block             45.0 1000.0 0.0 200 0.0 200
+
+thermo 1
+
+# Read pre-thermalised data, reset timestep
+read_restart bilayer-nial09-thermalised.init
+Reading restart file ...
+  restart file = 24 Mar 2022, LAMMPS = 24 Mar 2022
+  restoring atom style atomic from restart
+  orthogonal box = (1.0227931 0.19898699 0.19898699) to (512.97721 99.801013 99.801013)
+  6 by 1 by 1 MPI processor grid
+  pair style eam/alloy/gpu stores no restart info
+  397994 atoms
+  read_restart CPU = 0.226 seconds
+timestep   0.001
+reset_timestep 0
+
+# Set potentials
+pair_style eam/alloy
+pair_coeff * * Mishin-Ni-Al-2009.eam.alloy Ni Al
+
+
+# Thermodynamic acquire settings
+thermo_style custom step time temp press pe ke etotal vol
+thermo 100
+dump    atomdump all atom 100 contract.lammpstrj
+
+compute spatialbins all chunk/atom bin/1d x lower 0.01 ids every compress no units reduced
+compute bintemps    all temp/chunk spatialbins temp com yes
+compute ke all ke
+
+fix     temp_bias          all ave/chunk 1 10 10 spatialbins temp bias bintemps file temp.bias.dat
+fix     velocity_x         all ave/chunk 1 10 10 spatialbins vx file vx.dat
+fix     velocity_x_highres all ave/chunk 1  1  1 spatialbins vx file hrvx.dat
+fix     kinetic_energy     all ave/time 1 1 1 c_ke file ke.dat
+
+# Set microcanonical ensemble
+fix     microcanonical     all nve
+
+# Thump dynamics
+group          g_left      region left
+0 atoms in group g_left
+group         g_right      region right
+362046 atoms in group g_right
+velocity       g_left      set  20 NULL NULL units box sum yes
+velocity      g_right      set -20 NULL NULL units box sum yes
+fix      box_contract      all deform 1 x vel -40 remap v units box
+run 10000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- GPU package (short-range, long-range and three-body potentials):
+
+@Article{Brown11,
+ author = {W. M. Brown, P. Wang, S. J. Plimpton, A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Short Range Forces},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2011,
+ volume =  182,
+ pages =   {898--911}
+}
+
+@Article{Brown12,
+ author = {W. M. Brown, A. Kohlmeyer, S. J. Plimpton, A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Particle-Particle Particle-Mesh},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2012,
+ volume =  183,
+ pages =   {449--459}
+}
+
+@Article{Brown13,
+ author = {W. M. Brown, Y. Masako},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers – Three-Body Potentials},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2013,
+ volume =  184,
+ pages =   {2785--2793}
+}
+
+@Article{Trung15,
+ author = {T. D. Nguyen, S. J. Plimpton},
+ title = {Accelerating dissipative particle dynamics simulations for soft matter systems},
+ journal = {Comput.~Mater.~Sci.},
+ year =    2015,
+ volume =  100,
+ pages =   {173--180}
+}
+
+@Article{Trung17,
+ author = {T. D. Nguyen},
+ title = {GPU-accelerated Tersoff potentials for massively parallel Molecular Dynamics simulations},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2017,
+ volume =  212,
+ pages =   {113--122}
+}
+
+@Article{Nikolskiy19,
+ author = {V. Nikolskiy, V. Stegailov},
+ title = {GPU acceleration of four-site water models in LAMMPS},
+ journal = {Proceeding of the International Conference on Parallel Computing (ParCo 2019), Prague, Czech Republic},
+ year =    2019
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Unused restart file global fix info:
+  fix style: npt/gpu, fix ID: 1
+Per MPI rank memory allocation (min/avg/max) = 25.26 | 27.14 | 28.22 Mbytes
+   Step          Time           Temp          Press          PotEng         KinEng         TotEng         Volume    
+         0   0              7733.439       80458.745     -1653459.2      397843.93     -1255615.2      5078876.3    
+       100   0.1            7769.4181      95280.015     -1648547.7      399694.86     -1248852.8      5039194.1    
+       200   0.2            7742.7959      111565.93     -1642246.7      398325.29     -1243921.4      4999511.8    
+       300   0.3            7780.6433      130428.42     -1634873.3      400272.34     -1234601        4959829.6    
+       400   0.4            7793.2328      148272.65     -1623527.7      400920        -1222607.7      4920147.3    
+       500   0.5            7883.1252      163591.85     -1612785.1      405544.48     -1207240.6      4880465      
+       600   0.6            8213.8528      180273.07     -1603706.9      422558.64     -1181148.3      4840782.8    
+       700   0.7            8666.631       201710.23     -1593906.3      445851.65     -1148054.7      4801100.5    
+       800   0.8            9162.5765      228294.87     -1580495.7      471365.39     -1109130.4      4761418.3    
+       900   0.9            9647.709       254840.58     -1567331.6      496322.85     -1071008.7      4721736      
+      1000   1              10102.24       278598.71     -1556329.9      519706.03     -1036623.9      4682053.8    
+      1100   1.1            10499.633      302468.26     -1545740.1      540149.79     -1005590.3      4642371.5    
+      1200   1.2            10912.788      328931.07     -1535613.3      561404.36     -974208.94      4602689.3    
+      1300   1.3            11355.681      357151.27     -1526179.9      584188.83     -941991.08      4563007      
+      1400   1.4            11812.79       384607.52     -1517073.1      607704.62     -909368.45      4523324.8    
+      1500   1.5            12168.464      409339.64     -1507637.3      626002.15     -881635.15      4483642.5    
+      1600   1.6            12581.815      436375.49     -1496453.2      647266.87     -849186.36      4443960.2    
+      1700   1.7            13068.066      464028.95     -1486166.8      672281.88     -813884.88      4404278      
+      1800   1.8            13649.28       494530.88     -1474777.8      702182.2      -772595.6       4364595.7    
+      1900   1.9            14165.707      524705.25     -1463123.2      728749.58     -734373.64      4324913.5    
+      2000   2              14652.614      555289.55     -1450941.8      753798.36     -697143.47      4285231.2    
+      2100   2.1            15144.954      586246.37     -1439484.7      779126.61     -660358.09      4245549      
+      2200   2.2            15719.343      619102.8      -1429085.4      808675.85     -620409.6       4205866.7    
+      2300   2.3            16304.565      651495.99     -1419342        838782.37     -580559.59      4166184.5    
+      2400   2.4            16818.568      685161.28     -1409170        865225.05     -543944.91      4126502.2    
+      2500   2.5            17277.164      718967.53     -1399316.7      888817.35     -510499.37      4086820      
+      2600   2.6            17743.875      751414.93     -1389237.6      912827.12     -476410.47      4047137.7    
+      2700   2.7            18204.399      776922.04     -1379903        936518.65     -443384.36      4007455.4    
+      2800   2.8            18605.424      803182.31     -1369524.6      957149.19     -412375.39      3967773.2    
+      2900   2.9            18976.221      828472.29     -1359789.3      976224.75     -383564.51      3928090.9    
+      3000   3              19269.829      856008.42     -1349925.7      991329.3      -358596.4       3888408.7    
+      3100   3.1            19571.152      884360.37     -1341993.2      1006830.7     -335162.47      3848726.4    
+      3200   3.2            19903.612      913900.34     -1336050.1      1023934       -312116.12      3809044.2    
+      3300   3.3            20267.699      943210.78     -1331989.7      1042664.4     -289325.31      3769361.9    
+      3400   3.4            20645.585      969313.08     -1329200.3      1062104.6     -267095.78      3729679.7    
+      3500   3.5            21052.679      990966.74     -1326102.2      1083047.3     -243054.85      3689997.4    
+      3600   3.6            21552.836      1012299.4     -1323502.6      1108777.7     -214724.91      3650315.2    
+      3700   3.7            22092.911      1045711       -1315505.3      1136561.7     -178943.62      3610632.9    
+      3800   3.8            22630.85       1082481.6     -1304376.8      1164235.7     -140141.06      3570950.6    
+      3900   3.9            23082.804      1120157.2     -1290361.9      1187486.4     -102875.58      3531268.4    
+      4000   4              23407.463      1164619.6     -1271101.9      1204188.4     -66913.568      3491586.1    
+      4100   4.1            23585.152      1215903.1     -1246097.4      1213329.5     -32767.925      3451903.9    
+      4200   4.2            23577.087      1278858.8     -1214788.8      1212914.6     -1874.1904      3412221.6    
+      4300   4.3            23336.966      1354162.1     -1174794.5      1200561.6      25767.127      3372539.4    
+      4400   4.4            22975.873      1435669.6     -1130315.3      1181985.4      51670.015      3332857.1    
+      4500   4.5            22614.275      1514348.4     -1086069.1      1163383.1      77313.956      3293174.9    
+      4600   4.6            22429.592      1576591.1     -1050662.6      1153882.1      103219.55      3253492.6    
+      4700   4.7            22340.332      1623627.7     -1021496.6      1149290.2      127793.58      3213810.4    
+      4800   4.8            22165.617      1676793.6     -990575.01      1140302        149727.03      3174128.1    
+      4900   4.9            21825.307      1742927.2     -954035.84      1122794.9      168759.08      3134445.9    
+      5000   5              21290.914      1827362.7     -908160.82      1095303.2      187142.41      3094763.6    
+      5100   5.1            21019.772      1935476.6     -855204.85      1081354.4      226149.59      3055081.3    
+      5200   5.2            22104.108      2064209.8     -804633.81      1137137.7      332503.91      3015399.1    
+      5300   5.3            23974.969      2177665       -767324.85      1233383.5      466058.6       2975716.8    
+      5400   5.4            25801.21       2286702.7     -733118.81      1327333.8      594214.98      2936034.6    
+      5500   5.5            27255.255      2379387.5     -705041.9       1402136.6      697094.7       2896352.3    
+      5600   5.6            28399.053      2468085.2     -677704.25      1460978.9      783274.64      2856670.1    
+      5700   5.7            29253.088      2589712.9     -635751.5       1504914.4      869162.87      2816987.8    
+      5800   5.8            30290.386      2729229.9     -588107.9       1558277.8      970169.91      2777305.6    
+      5900   5.9            31793.208      2866288.6     -549869.42      1635589.9      1085720.5      2737623.3    
+      6000   6              33693.647      2986356.8     -520383.45      1733357.3      1212973.9      2697941.1    
+      6100   6.1            35592.31       3125941       -486676.4       1831033.3      1344356.9      2658258.8    
+      6200   6.2            36783.722      3303956.1     -413309.14      1892325        1479015.9      2618576.5    
+      6300   6.3            37525.581      3514152.7     -324257.66      1930489.7      1606232.1      2578894.3    
+      6400   6.4            38073.028      3723422.8     -237635.2       1958652.9      1721017.7      2539212      
+      6500   6.5            38522.423      3911736.6     -164485.36      1981771.9      1817286.6      2499529.8    
+      6600   6.6            38869.278      4090867.4     -95597.65       1999615.8      1904018.1      2459847.5    
+      6700   6.7            38714.377      4298005.9     -8677.5341      1991646.9      1982969.4      2420165.3    
+      6800   6.8            38640.61       4536386.9      85430.25       1987852        2073282.3      2380483      
+      6900   6.9            39144.573      4787916.2      171835.73    

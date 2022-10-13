@@ -9,7 +9,7 @@ timestep   0.00025
 
 
 # read data
-read_data Al2O3_supercell.data 
+read_data combined_cells.data 
 
 # pair potential
 
@@ -36,7 +36,7 @@ velocity all create 300 1 mom yes rot no
 
 fix 1 all npt temp 300 300 $(100.0*dt) iso 1.0 1.0 $(1000*dt)
  
-run  100000
+run  100
 
 write_restart equil.init
 write_data    equil.data

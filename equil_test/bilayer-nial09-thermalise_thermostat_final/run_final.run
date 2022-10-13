@@ -1,0 +1,30 @@
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+timestep 0.001
+read_data bilayer-nial09-thermalised-fine.data
+
+
+# pair potential
+
+pair_style eam/alloy
+pair_coeff * * Mishin-Ni-Al-2009.eam.alloy Ni Al
+
+# reporting
+
+thermo 100
+
+
+# Thermalisation
+dump   1 all atom 1000 generic.dump
+compute spatialbins all chunk/atom bin/1d x lower 0.01 ids every compress no units reduced # bound y 0.49 0.51 bound z 0.49 0.51
+compute    bintemps all temp/chunk spatialbins temp com yes
+fix temp_bias_out all ave/chunk 1 1000 1000 spatialbins temp bias bintemps file equilibrate.temp.bias.out
+fix        vx_out all ave/chunk 1 1000 1000 spatialbins vx file equilibrate.vx.out
+# Run
+fix   4 all momentum 100 linear 1 1 1 angular
+fix   3 all npt temp 300 300 50 y 0.0 0.0 50 z 0.0 0.0 50 drag 0.5
+run  1000000
+write_data bilayer-nial09-thermalised-final.data
+

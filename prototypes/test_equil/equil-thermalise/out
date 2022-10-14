@@ -1,0 +1,52 @@
+LAMMPS (24 Mar 2022)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+set 6 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+Reading data file ...
+  orthogonal box = (0 0 0) to (101.29907 101.29907 556.83251)
+  1 by 1 by 2 MPI processor grid
+  reading atoms ...
+  452112 atoms
+  read_data CPU = 0.804 seconds
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+- @article{cjiang2012
+The log file lists these citations in BibTeX format.
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+WARNING: Using 'neigh_modify every 1 delay 0 check yes' setting during minimization (src/min.cpp:187)
+Hybrid pair style last /omp style eam/alloy
+Last active /omp style is pair_style eam/alloy
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.28721
+  ghost atom cutoff = 8.28721
+  binsize = 4.143605, bins = 25 25 135
+  3 neighbor lists, perpetual/occasional/extra = 3 0 0
+  (1) pair eam/alloy, perpetual, skip from (3)
+      attributes: half, newton on, omp
+      pair build: skip/omp
+      stencil: none
+      bin: none
+  (2) pair edip/multi, perpetual
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+  (3) neighbor class addition, perpetual, half/full from (2)
+      attributes: half, newton on, omp
+      pair build: halffull/newton/omp
+      stencil: none
+      bin: none
+Setting up cg style minimization ...
+  Unit style    : metal
+  Current step  : 0
+Per MPI rank memory allocation (min/avg/max) = 498.5 | 499.1 | 499.7 Mbytes
+   Step          Time           Temp          PotEng         E_pair         TotEng         Press          Volume           Lx             Ly             Lz          CPULeft    
+         0   0              0             -721934.35     -721934.35     -721934.35      22127.173      5713937.2      101.29907      101.29907      556.83251      0            

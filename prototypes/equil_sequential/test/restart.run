@@ -1,0 +1,42 @@
+
+# System init
+
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+timestep   0.00025
+
+
+# read data
+read_restart equil.init
+
+# pair potential
+
+pair_style hybrid/overlay eam/alloy edip/multi
+pair_coeff * * eam/alloy Mishin-Ni-Al-2009.eam.alloy Al NULL
+pair_coeff * * edip/multi NiAlO.edip Al O
+
+mass 2 15.999
+
+
+# reporting
+thermo_style custom step time temp pe epair etotal press vol lx ly lz spcpu cpuremain elapsed
+thermo 100 
+
+dump   1 all atom 100 generic.lammpstrj
+
+# Single point 
+min_style cg
+minimize 1e-5 1e-5 10000 100000 
+
+# Thermalisation
+
+velocity all create 300 1 mom yes rot no
+
+fix 1 all npt temp 300 300 $(100.0*dt) iso 1.0 1.0 $(1000*dt)
+ 
+run  1000
+
+write_restart equil.init
+write_data    equil.data

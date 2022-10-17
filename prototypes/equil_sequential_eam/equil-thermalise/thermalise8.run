@@ -19,7 +19,7 @@ timestep   0.00025
 read_restart thermalise7.init
 
 pair_style eam/alloy 
-pair_coeff * * eam/alloy Mishin-Ni-Al-2009.eam.alloy Al Ni 
+pair_coeff * *  Mishin-Ni-Al-2009.eam.alloy Al Ni 
 
 
 # reporting

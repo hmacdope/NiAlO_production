@@ -28,15 +28,15 @@ thermo 10000
 dump 1 all atom 10000  thermalise9.lammpstrj
 
 
-compute spatialbins all chunk/atom bin/1d x lower 0.01 ids every compress no units reduced 
+compute spatialbins all chunk/atom bin/1d z lower 0.01 ids every compress no units reduced 
 compute    bintemps all temp/chunk spatialbins temp com yes
 fix temp_bias_out all ave/chunk 1 1000 1000 spatialbins temp bias bintemps file equilibrate9.temp.bias.out
-fix        vx_out all ave/chunk 1 1000 1000 spatialbins vx file equilibrate9.vx.out
+fix        vz_out all ave/chunk 1 1000 1000 spatialbins vz file equilibrate9.vz.out
 
 
 # Thermalisation
 fix   1 all momentum 100 linear 1 1 1 angular
-fix   2 all npt temp 300 300 $(100*dt) y  0.0 0.0 $(1000*dt) z 0.0 0.0 $(1000*dt)  drag 0.5
+fix   2 all npt temp 300 300 $(100*dt) x  0.0 0.0 $(1000*dt) y 0.0 0.0 $(1000*dt)  drag 0.5
 run   1000000 
 
 write_restart thermalise9.init

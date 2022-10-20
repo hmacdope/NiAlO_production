@@ -16,7 +16,7 @@ timestep   0.00025
 
 # lattice construction
 
-read_data reproduce_original_nini.data
+read_data reproduce_original_NiNi.data
 
 pair_style  eam/alloy 
 pair_coeff * *  Mishin-Ni-Al-2009.eam.alloy Al Ni 
@@ -34,15 +34,15 @@ minimize 1e-7 1e-7 10000 100000
 
 velocity all create 300 1 mom yes rot no
 
-compute spatialbins all chunk/atom bin/1d x lower 0.01 ids every compress no units reduced 
+compute spatialbins all chunk/atom bin/1d z lower 0.01 ids every compress no units reduced 
 compute    bintemps all temp/chunk spatialbins temp com yes
 fix temp_bias_out all ave/chunk 1 1000 1000 spatialbins temp bias bintemps file equilibrate0.temp.bias.out
-fix        vx_out all ave/chunk 1 1000 1000 spatialbins vx file equilibrate0.vx.out
+fix        vz_out all ave/chunk 1 1000 1000 spatialbins vz file equilibrate0.vz.out
 
 
 # Thermalisation
 fix   1 all momentum 100 linear 1 1 1 angular
-fix   2 all npt temp 300 300 $(100*dt) y  0.0 0.0 $(1000*dt) z 0.0 0.0 $(1000*dt)  drag 0.5
+fix   2 all npt temp 300 300 $(100*dt) x  0.0 0.0 $(1000*dt) y 0.0 0.0 $(1000*dt)  drag 0.5
 run   1000000 
 
 write_restart thermalise0.init

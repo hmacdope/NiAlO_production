@@ -38,7 +38,7 @@ fix     microcanonical     all nve
 # Thump dynamics
 group          g_left      region left
 group         g_right      region right
-velocity       g_left      set   NULL NULL 40.0 units box sum yes
-velocity      g_right      set  NULL NULL -40.0 units box sum yes
-fix      box_contract      all deform 1 z vel -80.0 remap v units box
+velocity       g_left      set   NULL NULL 20.0 units box sum yes
+velocity      g_right      set  NULL NULL -20.0 units box sum yes
+fix      box_contract      all deform 1 z vel -40.0 remap v units box
 run 50000

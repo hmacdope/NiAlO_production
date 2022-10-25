@@ -1,13 +1,14 @@
 from operator import truediv
 import numpy as np
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-speed', dest='speed', type=float, required=True)
 parser.add_argument('-file', dest='file', type=str, required=True)
-parser.add_arument('-step', dest='step', type=int, required=True)
 parser.add_argument('--eam', dest='eam', action='store_true')
 args = parser.parse_args()
+
 
 
 with open(args.file, 'r') as r:
@@ -26,6 +27,9 @@ with open(args.file, 'r') as r:
             zlo = float(toks[0])
             zhi = float(toks[1])
 
+with open('min_ke.dat', 'r') as d:
+    lines = d.readlines()
+    min_ke = int(lines[0])
 
            
 buffer=10
@@ -77,9 +81,9 @@ group         g_right      region right
 velocity       g_left      set   NULL NULL {10*args.speed/2} units box sum yes
 velocity      g_right      set  NULL NULL {-10*args.speed/2} units box sum yes
 fix      box_contract      all deform 1 z vel {-20*args.speed/2} remap v units box
-run {args.step}
+run {min_ke}
 unfix box_contract
-run {4000000-args.step}
+run {4000000-min_ke}
 """)
     else:
         f.write(f"""
@@ -127,8 +131,8 @@ group         g_right      region right
 velocity       g_left      set  NULL NULL {10*args.speed/2} units box sum yes
 velocity      g_right      set  NULL NULL {-10*args.speed/2} units box sum yes
 fix      box_contract      all deform 1 z vel {-20*args.speed/2} remap v units box
-run {args.step}
+run {min_ke}
 unfix box_contract
-run {4000000-args.step}
+run {4000000-min_ke}
 """)
     

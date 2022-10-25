@@ -24,7 +24,7 @@ Reading data file ...
   496594 atoms
   reading velocities ...
   496594 velocities
-  read_data CPU = 1.642 seconds
+  read_data CPU = 1.749 seconds
 timestep   0.00025
 reset_timestep 0
 

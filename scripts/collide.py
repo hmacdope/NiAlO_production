@@ -35,7 +35,7 @@ with open('min_ke.dat', 'r') as d:
 buffer=10
 half_z = (zhi -zlo)/2
 
-with open(f'collide_probe_{args.speed}.run', 'w') as f:
+with open(f'collide_{args.speed}.run', 'w') as f:
     if args.eam:
         f.write(f"""
 # Impact of  nanolaminate, {args.speed} km/s.

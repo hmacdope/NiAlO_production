@@ -23,7 +23,7 @@ pair_coeff * * edip/multi NiAlO.edip Al Ni O
 # Thermodynamic acquire settings
 thermo_style custom step time temp press pe ke etotal vol
 thermo 1000
-dump    atomdump all atom 1000 contract.lammpstrj
+dump    atomdump all atom 10000 contract.lammpstrj
 compute spatialbins all chunk/atom bin/1d z lower 0.01 ids every compress no units reduced
 compute bintemps    all temp/chunk spatialbins temp com yes
 compute ke all ke
@@ -45,4 +45,6 @@ velocity      g_right      set  NULL NULL -10.0 units box sum yes
 fix      box_contract      all deform 1 z vel -20.0 remap v units box
 run 22677
 unfix box_contract
-run 3977323
+run 1977323
+write_restart restart.init
+write_dump restart.dump 

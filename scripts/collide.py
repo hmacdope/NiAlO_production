@@ -155,7 +155,6 @@ thermo 1
 # Read restart
 read_data restart.data
 timestep   0.00025
-reset_timestep 0
 
 # Set potentials
 pair_style hybrid/overlay eam/alloy edip/multi

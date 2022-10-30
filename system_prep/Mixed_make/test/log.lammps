@@ -1,0 +1,129 @@
+LAMMPS (31 Aug 2021)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+
+# System init
+
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+timestep   0.00025
+
+
+# read data
+read_data full_slab.data
+Reading data file ...
+  orthogonal box = (0.0000000 0.0000000 0.0000000) to (101.79907 101.29907 615.91251)
+  1 by 1 by 4 MPI processor grid
+  reading atoms ...
+  520712 atoms
+  read_data CPU = 2.071 seconds
+
+# pair potential
+
+pair_style hybrid/overlay eam/alloy edip/multi
+pair_coeff * * eam/alloy Mishin-Ni-Al-2009.eam.alloy Al Ni NULL
+pair_coeff * * edip/multi NiAlO.edip Al Ni O
+
+mass 3 15.999
+
+
+# reporting
+thermo_style custom step time temp pe epair etotal press vol lx ly lz spcpu cpuremain elapsed
+thermo 100
+
+dump   1 all atom 100 generic.lammpstrj
+
+# Single point
+min_style cg
+minimize 1e-5 1e-5 10000 100000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- @article{cjiang2012
+ author    = {Jian, Chao and Morgan, Dane, and Szlufarska, Izabella},
+ title     = {Carbon tri-interstitial defect: A model for DII center},
+ journal   = {Physical Review B},
+ volume    = {86},
+ pages     = {144118},
+ year      = {2012},
+}
+
+@article{lpizzagalli2010,
+ author    = {G. Lucas, M. Bertolus, and L. Pizzagalli},
+ journal   = {J. Phys. : Condens. Matter 22},
+ volume    = {22},
+ pages     = {035802},
+ year      = {2010},
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+WARNING: Using 'neigh_modify every 1 delay 0 check yes' setting during minimization (src/min.cpp:188)
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.28721
+  ghost atom cutoff = 8.28721
+  binsize = 4.143605, bins = 25 25 149
+  3 neighbor lists, perpetual/occasional/extra = 3 0 0
+  (1) pair eam/alloy, perpetual, skip from (3)
+      attributes: half, newton on
+      pair build: skip
+      stencil: none
+      bin: none
+  (2) pair edip/multi, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+  (3) neighbor class addition, perpetual, half/full from (2)
+      attributes: half, newton on
+      pair build: halffull/newton
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 225.4 | 253.6 | 277.4 Mbytes
+Step Time Temp PotEng E_pair TotEng Press Volume Lx Ly Lz S/CPU CPULeft Elapsed 
+       0            0            0   -798005.51   -798005.51   -798005.51     170701.8    6351382.3    101.79907    101.29907    615.91251            0            0        0 
+     100        0.025            0     -2367556     -2367556     -2367556    22476.833    6351382.3    101.79907    101.29907    615.91251   0.38312284    25840.276      100 
+     200         0.05            0     -2439842     -2439842     -2439842   -11685.674    6351382.3    101.79907    101.29907    615.91251   0.31471858    28359.097      200 
+     229      0.05725            0   -2443979.6   -2443979.6   -2443979.6    -13043.47    6351382.3    101.79907    101.29907    615.91251   0.25863282    29478.772      229 
+Loop time of 690.886 on 4 procs for 229 steps with 520712 atoms
+
+67.4% CPU use with 4 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -798005.509596942  -2443965.71743771   -2443979.6426384
+  Force two-norm initial, final = 9.1032510e+09 555.93747
+  Force max component initial, final = 1.7437575e+08 26.208973
+  Final line search alpha, max atom move = 0.0032241774 0.084502377
+  Iterations, force evaluations = 229 319
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 459.77     | 532.96     | 675        | 366.1 | 77.14
+Neigh   | 6.6449     | 7.2324     | 8.207      |  22.1 |  1.05
+Comm    | 1.8694     | 144.85     | 218.37     | 706.4 | 20.97
+Output  | 0.65729    | 0.65747    | 0.6578     |   0.0 |  0.10
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 5.19       |            |       |  0.75
+
+Nlocal:        130178.0 ave      143136 max      118737 min
+Histogram: 1 0 0 1 0 1 0 0 0 1
+Nghost:        64006.8 ave       67192 max       58266 min
+Histogram: 1 0 0 0 0 0 0 1 1 1
+Neighs:         0.00000 ave           0 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 0
+FullNghs:  2.43039e+07 ave 2.70776e+07 max 2.07389e+07 min
+Histogram: 1 0 0 0 0 1 0 1 0 1
+
+Total # of neighbors = 97215680
+Ave neighs/atom = 186.69760
+Neighbor list builds = 4
+Dangerous builds = 0

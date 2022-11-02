@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -P y35
+#PBS -q gpuvolta
+#PBS -l walltime=12:00:00
+#PBS -l ncpus=24
+#PBS -l ngpus=2
+#PBS -l mem=60GB
+#PBS -l jobfs=60GB
+#PBS -l wd
+
+module load lammps/29Sep2021
+mpirun lmp_openmpi -sf gpu -in ${PBS_JOBNAME}.run > ${PBS_JOBNAME}.out
+qsub thermalise3

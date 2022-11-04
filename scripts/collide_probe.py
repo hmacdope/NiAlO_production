@@ -73,15 +73,9 @@ fix     microcanonical     all nve
 # Thump dynamics
 group          g_left      region left
 group         g_right      region right
-<<<<<<< HEAD
 velocity       g_left      set   NULL NULL {10*args.speed/2} units box sum yes
 velocity      g_right      set  NULL NULL {-10*args.speed/2} units box sum yes
 fix      box_contract      all deform 1 z vel {-20*args.speed/2} remap v units box
-=======
-velocity       g_left      set   NULL NULL {10*args.speed} units box sum yes
-velocity      g_right      set  NULL NULL {-10*args.speed} units box sum yes
-fix      box_contract      all deform 1 z vel {-20*args.speed} remap v units box
->>>>>>> f2a9334a2c96670364753e5fede2058cbe5be597
 run 50000
 """)
     else:
@@ -125,15 +119,9 @@ fix     microcanonical     all nve
 # Thump dynamics
 group          g_left      region left
 group         g_right      region right
-<<<<<<< HEAD
 velocity       g_left      set  NULL NULL {10*args.speed/2} units box sum yes
 velocity      g_right      set  NULL NULL {-10*args.speed/2} units box sum yes
 fix      box_contract      all deform 1 z vel {-20*args.speed/2} remap v units box
-=======
-velocity       g_left      set  NULL NULL {10*args.speed} units box sum yes
-velocity      g_right      set  NULL NULL {-10*args.speed} units box sum yes
-fix      box_contract      all deform 1 z vel {-20*args.speed} remap v units box
->>>>>>> f2a9334a2c96670364753e5fede2058cbe5be597
 run 50000
 """)
     

@@ -60,8 +60,8 @@ pair_coeff * * Mishin-Ni-Al-2009.eam.alloy Al Ni
 
 # Thermodynamic acquire settings
 thermo_style custom step time temp press pe ke etotal vol
-thermo 1000
-dump    atomdump all atom 1000 contract.lammpstrj
+thermo 10000
+dump    atomdump all atom 10000 contract.lammpstrj
 compute spatialbins all chunk/atom bin/1d z lower 0.01 ids every compress no units reduced
 compute bintemps    all temp/chunk spatialbins temp com yes
 compute ke all ke
@@ -135,7 +135,7 @@ run {min_ke}
 unfix box_contract
 run {2000000-min_ke}
 write_restart restart.init
-write_dump restart.dump 
+write_data restart.data
 """)
 
 if not args.eam:
@@ -164,22 +164,22 @@ pair_coeff * * edip/multi NiAlO.edip Al Ni O
 # Thermodynamic acquire settings
 thermo_style custom step time temp press pe ke etotal vol
 thermo 1000
-dump    atomdump all atom 10000 contract.lammpstrj
+dump    atomdump all atom 10000 contract1.lammpstrj
 compute spatialbins all chunk/atom bin/1d z lower 0.01 ids every compress no units reduced
 compute bintemps    all temp/chunk spatialbins temp com yes
 compute ke all ke
 compute temp all temp
 
-fix     temp_bias          all ave/chunk 1 10 10 spatialbins temp bias bintemps file temp.bias.dat
-fix     velocity_z         all ave/chunk 1 10 10 spatialbins vz file vz.dat
-fix     kinetic_energy     all ave/time 1 10 10 c_ke file ke.dat
-fix     temp               all ave/time 1 10 10 c_temp file temp.dat
+fix     temp_bias          all ave/chunk 1 10 10 spatialbins temp bias bintemps file temp1.bias.dat
+fix     velocity_z         all ave/chunk 1 10 10 spatialbins vz file vz1.dat
+fix     kinetic_energy     all ave/time 1 10 10 c_ke file ke1.dat
+fix     temp               all ave/time 1 10 10 c_temp file temp1.dat
 
 # Set microcanonical ensemble
 fix     microcanonical     all nve
 
 
 run {2000000}
-write_restart restart1.init
-write_dump restart1.dump 
+write_restart restart2.init
+write_data restart2.data 
 """)

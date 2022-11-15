@@ -1,0 +1,42 @@
+# Impact of  nanolaminate, 5.0 km/s.
+
+# simulation construction
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+region       left    block         -10.5576952616445  111.85676090097762 -10.478180633514743  111.77724627280213 0.0 264.1922538528
+region      right    block         -10.5576952616445  111.85676090097762 -10.478180633514743  111.77724627280213 264.1922538528 528.3845077056
+thermo 1
+
+# Read restart
+read_restart restart.init
+timestep   0.00025
+reset_timestep 0
+
+# Set potentials
+pair_style hybrid/overlay eam/alloy edip/multi
+pair_coeff * * eam/alloy Mishin-Ni-Al-2009.eam.alloy Al Ni NULL
+pair_coeff * * edip/multi NiAlO.edip Al Ni O
+
+# Thermodynamic acquire settings
+thermo_style custom step time temp press pe ke etotal vol
+thermo 1000
+dump    atomdump all atom 10000 contract.lammpstrj
+compute spatialbins all chunk/atom bin/1d z lower 0.01 ids every compress no units reduced
+compute bintemps    all temp/chunk spatialbins temp com yes
+compute ke all ke
+compute temp all temp
+
+fix     temp_bias          all ave/chunk 1 10 10 spatialbins temp bias bintemps file temp.bias.dat
+fix     velocity_z         all ave/chunk 1 10 10 spatialbins vz file vz.dat
+fix     kinetic_energy     all ave/time 1 10 10 c_ke file ke.dat
+fix     temp               all ave/time 1 10 10 c_temp file temp.dat
+
+# Set microcanonical ensemble
+fix     microcanonical     all nve
+
+
+run 2000000
+write_restart restart1.init
+write_dump restart1.dump 

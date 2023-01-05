@@ -42,6 +42,6 @@ group         g_right      region right
 velocity       g_left      set   NULL NULL 10.0 units box sum yes
 velocity      g_right      set  NULL NULL -10.0 units box sum yes
 fix      box_contract      all deform 1 z vel -20.0 remap v units box
-run 29018
+run 25003
 unfix box_contract
-run 3970982
+run 3974997

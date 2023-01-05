@@ -10,7 +10,7 @@ region      right    block         -9.462253007250276  110.70933747144721 -9.466
 thermo 1
 
 # Read restart
-read_restart restart.init
+read_data restart.data
 timestep   0.00025
 
 # Set potentials

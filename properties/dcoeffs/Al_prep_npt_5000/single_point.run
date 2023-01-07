@@ -1,0 +1,48 @@
+
+# System init
+
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+timestep   0.00025
+
+
+#
+
+variable a equal 4.064
+
+
+lattice         fcc $a
+region          box prism 0 10.0 0 10.0 0 10.0 0.0 0.0 0.0
+create_box      1 box
+create_atoms    1 box
+ 
+
+
+# pair potential
+pair_style eam/alloy
+pair_coeff * *  Mishin-Ni-Al-2009.eam.alloy Al 
+
+
+
+# reporting
+
+dump   1 all atom 1000 generic.lammpstrj
+dump   2 all custom 1000 unwrapped.lammpstrj id type xu yu zu
+
+# Single point 
+min_style cg
+minimize 1e-8 1e-8 10000 100000 
+
+# Thermalisation
+
+velocity all create 5000 1 mom yes rot no
+fix 1 all npt temp 5000 5000 $(100*dt) iso 1.0 1.0 $(1000*dt)
+
+thermo 1000
+
+run  500000
+
+write_restart checkpoint.init
+write_data checkpoint.data

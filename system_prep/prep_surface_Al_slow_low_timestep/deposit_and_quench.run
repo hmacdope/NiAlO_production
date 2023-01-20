@@ -1,0 +1,106 @@
+
+# System init
+
+units      metal
+dimension  3
+boundary   p p f 
+atom_style atomic
+timestep   0.00010
+
+
+# read data
+
+region total block 0 100 0 100 -20 120 
+create_box 2 total
+# al 
+
+region al_low block 0 100 0 100 0 20 units box 
+region al_high block 0 100 0 100 80 100
+lattice fcc 4.064
+create_atoms 1 region al_high
+create_atoms 1 region al_low
+
+
+molecule O2 O2.txt
+region O_low block 0 100 0 100 25 40  units box 
+region O_high block 0 100 0 100 60  75 units box
+
+
+# variables for tinitial
+variable natoms_add equal  5000 
+variable steps_per_add equal 2000
+variable step_tot equal "v_natoms_add * v_steps_per_add"
+# pair potential
+
+pair_style hybrid/overlay eam/alloy edip/multi
+pair_coeff * * eam/alloy Mishin-Ni-Al-2009.eam.alloy Al NULL
+pair_coeff * * edip/multi NiAlO.edip Al O
+
+mass 2 15.999
+
+group Oxygen type 2
+
+# loop over deposition / quenching 
+variable i loop 10
+variable natoms_add_per_loop equal "v_natoms_add / 10"
+variable step_tot_per_loop  equal "v_step_tot / 10"
+variable quench_length  equal 10000
+
+label loop 
+
+fix  3 Oxygen deposit ${natoms_add_per_loop} 1 ${steps_per_add} 12345 region O_high  &
+                mol O2 vz 5.0 5.0  units  box near 4.0
+
+fix  4 Oxygen deposit ${natoms_add_per_loop} 1 ${steps_per_add} 12345 region O_low  &
+                mol O2 vz -5.0 -5.0  units  box near 4.0 
+fix  5 all wall/reflect zhi EDGE 
+fix  6 all wall/reflect zlo EDGE
+
+# Single point 
+min_style cg
+minimize 1e-5 1e-5 10000 10000
+
+compute         alltemp${i} all  temp
+compute_modify  alltemp${i} dynamic/dof yes extra/dof 0
+
+# reporting
+thermo_style custom step temp pe epair etotal press vol atoms c_alltemp${i}
+thermo_modify   temp alltemp${i} lost/bond ignore lost warn
+thermo 100
+
+dump  1  all atom 100 deposit${i}.lammpstrj
+write_data pre${i}.data
+
+# Thermalisation
+velocity all create 300 1 mom yes rot no
+
+fix 2 all nve   
+fix_modify 2  dynamic/dof yes
+run ${step_tot_per_loop} 
+
+write_data deposit${i}.data
+write_restart deposit${i}.init
+
+unfix 3 #deposit
+unfix 4 #deposit
+unfix 2 #nve
+
+dump   2 all atom 100 quench${i}.lammpstrj
+
+run 0
+thermo_style custom step temp pe epair etotal press vol atoms c_alltemp${i}
+variable mytemp equal c_alltemp${i}
+fix 2 all nvt temp ${mytemp}  300.0 $(20*dt)
+
+run ${quench_length}
+
+write_data quench${i}.data
+write_restart quench${i}.init
+
+unfix 2 
+undump 1
+undump 2 
+next i 
+jump SELF loop
+
+

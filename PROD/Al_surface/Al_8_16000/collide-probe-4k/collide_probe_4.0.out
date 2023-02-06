@@ -1,0 +1,52 @@
+LAMMPS (29 Sep 2021)
+  using 1 OpenMP thread(s) per MPI task
+Reading data file ...
+  orthogonal box = (-0.51853158 -0.51152408 0.0000000) to (101.59120 101.58419 617.40100)
+  3 by 2 by 16 MPI processor grid
+  reading atoms ...
+  442002 atoms
+  reading velocities ...
+  442002 velocities
+  read_data CPU = 5.049 seconds
+221040 atoms in group g_left
+220962 atoms in group g_right
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+- @article{cjiang2012
+The log file lists these citations in BibTeX format.
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Neighbor list info ...
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.28721
+  ghost atom cutoff = 8.28721
+  binsize = 4.143605, bins = 25 25 150
+  3 neighbor lists, perpetual/occasional/extra = 3 0 0
+  (1) pair eam/alloy, perpetual, skip from (3)
+      attributes: half, newton on
+      pair build: skip
+      stencil: none
+      bin: none
+  (2) pair edip/multi, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+  (3) neighbor class addition, perpetual, half/full from (2)
+      attributes: half, newton on
+      pair build: halffull/newton
+      stencil: none
+      bin: none
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.00025
+Per MPI rank memory allocation (min/avg/max) = 5.174 | 13.23 | 18.90 Mbytes
+Step Time Temp Press PotEng KinEng TotEng Volume 
+       0            0    8280.7575    76013.515   -1936740.8    473105.45   -1463635.3    6436384.6 
+ERROR: Lost atoms: original 442002 current 441998 (../thermo.cpp:439)
+Last command: run 50000

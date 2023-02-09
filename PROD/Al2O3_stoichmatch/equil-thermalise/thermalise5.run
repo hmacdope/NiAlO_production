@@ -1,0 +1,46 @@
+################################################################################
+# LAMMPS input file                                                            #
+# Equilibration                                                                #
+#                                                                              #
+################################################################################
+
+# variables
+
+# simulation construction
+
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+timestep   0.00025 
+
+# lattice construction
+
+read_restart thermalise4.init
+
+pair_style hybrid/overlay eam/alloy edip/multi
+pair_coeff * * eam/alloy Mishin-Ni-Al-2009.eam.alloy Al Ni NULL
+pair_coeff * * edip/multi NiAlO.edip Al Ni O
+
+mass 3 15.999
+
+# reporting
+thermo_style custom step time temp pe epair etotal press vol lx ly lz  cpuremain 
+thermo 10000
+dump 1 all atom 10000  thermalise5.lammpstrj
+
+
+compute spatialbins all chunk/atom bin/1d z lower 0.01 ids every compress no units reduced 
+compute    bintemps all temp/chunk spatialbins temp com yes
+fix temp_bias_out all ave/chunk 1 1000 1000 spatialbins temp bias bintemps file equilibrate5.temp.bias.out
+fix        vz_out all ave/chunk 1 1000 1000 spatialbins vz file equilibrate5.vz.out
+
+
+# Thermalisation
+fix   1 all momentum 100 linear 1 1 1 angular
+fix   2 all npt temp 300 300 $(100*dt) x  0.0 0.0 $(1000*dt) y 0.0 0.0 $(1000*dt)  drag 0.5
+run   1000000 
+
+write_restart thermalise5.init
+write_data thermalise5.data
+

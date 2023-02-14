@@ -1,0 +1,50 @@
+
+# System init
+
+units      metal
+dimension  3
+boundary   p p p
+atom_style atomic
+timestep   0.00025
+
+
+# read data
+read_data NiO_supercell_iter_last_lmp.data 
+replicate 2 2 2 
+
+# pair potential
+
+pair_style hybrid/overlay eam/alloy edip/multi
+pair_coeff * * eam/alloy Mishin-Ni-Al-2009.eam.alloy Ni NULL
+pair_coeff * * edip/multi NiAlO.edip Ni O
+
+mass 2 15.999
+
+thermo 1000
+thermo_style custom step temp pe etotal press vol
+
+
+# reporting
+
+dump   1 all atom 1000 generic.lammpstrj
+dump   2 all custom 1000 unwrapped.lammpstrj id type xu yu zu
+
+# Single point 
+min_style cg
+minimize 1e-8 1e-8 10000 100000
+
+# Thermalisation
+
+variable v equal vol
+
+velocity all create 500 1 mom yes rot no
+fix 1 all npt temp 500 4500 $(100*dt) iso 0.0 0.0 $(1000*dt)
+fix     2     all ave/time 1 1 1 c_thermo_temp file temp.dat
+fix     3     all ave/time 1 1 1 v_v file vol.dat
+
+
+run  2000000
+
+write_restart checkpoint.init
+write_data checkpoint.data
+

@@ -8,4 +8,4 @@
 
 module load lammps/29Sep2021
 mpirun lmp_openmpi -in ${PBS_JOBNAME}.run > ${PBS_JOBNAME}.out
-qsub collide_2.0_continue
+qsub collide_3.0_continue

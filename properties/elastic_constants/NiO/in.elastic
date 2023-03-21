@@ -46,11 +46,10 @@
 include init.mod
 include potential.mod
 
-minimize 0.0 1.0e-10 10000 1000000
 
-
+min_style cg
 dump   1 all atom 1 generic.lammpstrj
-
+minimize 0.0 1.0e-6 10000 1000000
 
 # Compute initial state
 fix 3 all box/relax  aniso 0.0

@@ -36,8 +36,8 @@ minimize 1e-10 1e-10 10000 100000
 velocity all create 300 1 mom yes rot no
 
 #dump   1 all atom 10 generic.dump
-fix 1 all npt temp 300 300 $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 200000 
+fix 1 all npt temp 500 500 $(100*dt) iso 1.0 1.0 $(1000*dt)
+run 2000000 
 
 write_restart checkpoint.init
 write_data NiO_npt_equil.data

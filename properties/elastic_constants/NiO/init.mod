@@ -30,9 +30,9 @@ variable cunits string GPa
 
 # Define minimization parameters
 variable etol equal 0.0 
-variable ftol equal 1.0e-10
+variable ftol equal 1.0e-2
 variable maxiter equal 100
-variable maxeval equal 1000
+variable maxeval equal 100
 variable dmax equal 1.0e-2
 
 # generate the box and atom positions using a diamond lattice
